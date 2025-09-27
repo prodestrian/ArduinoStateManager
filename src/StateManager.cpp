@@ -5,6 +5,17 @@ void StateManager::update()
 {
     _currentMillis = millis();
     _hasChanged = false;
+
+    if (_nextState >= 0 && _currentMillis >= _stateChangeMillis) {
+        // Timer has elapsed
+        set(_nextState);
+
+        cancelDelay();
+
+        if (_delayedStateChangeCallback) {
+            _delayedStateChangeCallback(current());
+        }
+    }
 };
 
 bool StateManager::set(int newState)
@@ -23,6 +34,31 @@ bool StateManager::set(int newState, bool force)
     _changeState(newState);
 
     return true;
+};
+
+void StateManager::setDelayed(int newState, int delayMilliseconds)
+{
+    _stateChangeMillis = _currentMillis + delayMilliseconds;
+
+    _nextState = newState;
+
+    _delayedStateChangeCallback = nullptr;
+};
+
+void StateManager::setDelayed(int newState, int delayMilliseconds, void (*callback)(int newState))
+{
+    _stateChangeMillis = _currentMillis + delayMilliseconds;
+
+    _nextState = newState;
+
+    _delayedStateChangeCallback = callback;
+};
+
+void StateManager::cancelDelay()
+{
+    _stateChangeMillis = 0;
+
+    _nextState = -1;
 };
 
 int StateManager::current()

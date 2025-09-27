@@ -7,6 +7,9 @@ public:
     void update();
     bool set(int newState);
     bool set(int newState, bool force);
+    void setDelayed(int newState, int delayMilliseconds);
+    void setDelayed(int newState, int delayMilliseconds, void (*callback)(int newState));
+    void cancelDelay();
     int current();
     int previous();
     bool is(int state);
@@ -22,11 +25,15 @@ private:
 
     int _currentState;
     int _previousState;
+    int _nextState;
+    int _stateChangeMillis;
 
     bool _hasChanged;
 
     unsigned long _currentMillis;
     unsigned long _lastChanged = 0;
+
+    void (*_delayedStateChangeCallback)(int newState);
 };
 
 #endif //STATEMANAGER_H
