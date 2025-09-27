@@ -11,10 +11,6 @@ void StateManager::update()
         set(_nextState);
 
         cancelDelay();
-
-        if (_delayedStateChangeCallback) {
-            _delayedStateChangeCallback(current());
-        }
     }
 };
 
@@ -41,17 +37,6 @@ void StateManager::setDelayed(int newState, int delayMilliseconds)
     _stateChangeMillis = _currentMillis + delayMilliseconds;
 
     _nextState = newState;
-
-    _delayedStateChangeCallback = nullptr;
-};
-
-void StateManager::setDelayed(int newState, int delayMilliseconds, void (*callback)(int newState))
-{
-    _stateChangeMillis = _currentMillis + delayMilliseconds;
-
-    _nextState = newState;
-
-    _delayedStateChangeCallback = callback;
 };
 
 void StateManager::cancelDelay()
@@ -112,4 +97,4 @@ void StateManager::_changeState(int state)
     _currentState = state;
     _lastChanged = _currentMillis;
     _hasChanged = true;
-};
+}
